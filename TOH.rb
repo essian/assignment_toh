@@ -80,7 +80,14 @@ loop do
     prompt "You quit the game. Thanks for playing!"
     break
   else 
+    begin
+      JSON.parse(move)
+    rescue
+      puts "That's not a valid move"
+      next
+    else
     move = JSON.parse(move)
+  end
     brd = move_piece(move, brd)
     display_board(brd)
     if user_wins?(brd)
