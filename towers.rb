@@ -72,6 +72,17 @@ def user_wins?(brd)
   brd == winning_brd
 end
 
+def user_quit?(move)
+  if move.downcase =~ /q.*/
+    prompt "You quit the game. Thanks for playing!"
+    true
+  else
+    false
+  end
+end
+
+
+
 def play
   welcome
   brd = create_board('new')
@@ -80,24 +91,25 @@ def play
   loop do
     prompt "Enter move:"
     move = gets.chomp
-    if (move.downcase =~ /q.*/)
-      prompt "You quit the game. Thanks for playing!"
-      break
-    else 
-      begin
-        JSON.parse(move)
-        rescue
-          puts "You must enter a valid move"
-          next
-        else
-          move = JSON.parse(move)
-      end
+    break if user_quit?(move)
+    begin
+      JSON.parse(move)
+      rescue
+        puts "You must enter a valid move"
+        next
+      else
+        move = JSON.parse(move)
+     end
       if move.size != 2
         puts "You must enter an array of 2 values"
         next
       end
       if move[0] == move[1]
         puts "You cannot move a piece to its current position"
+        next
+      end
+      if find_top_piece(move[0], brd)==nil
+        puts "There are no pieces in that tower to move, try again."
         next
       end
       unless ((0..2).include?(move[0]) && (0..2).include?(move[1]))
@@ -115,7 +127,7 @@ def play
 
   end
 end
-end
+
 
 
 
