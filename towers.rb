@@ -59,10 +59,10 @@ class TowerOfHanoi
   def make_move(move, brd)
     piece = find_top_piece(move[0], brd)
     target = find_top_piece(move[1], brd)
-    if (target == nil || target.count('o')>piece.count('o'))
-      move_piece(move, brd, piece)    
+    if (target.nil? || target.count('o')>piece.count('o'))
+      move_piece(move, brd, piece)
     else
-      puts "That's not a valid move, try again."
+      raise 
     end
     brd
   end
@@ -73,17 +73,13 @@ class TowerOfHanoi
   end
 
   def user_quit?(move)
-    if move.downcase =~ /q.*/
-      prompt "You quit the game. Thanks for playing!"
-      true
-    else
-      false
-    end
+    move.downcase =~ /q.*/
   end
 
   def convert_to_array(move)
     begin
-      JSON.parse(move)
+      move = JSON.parse(move)
+
       rescue
         puts "You must enter a valid array"
     end
@@ -119,7 +115,12 @@ class TowerOfHanoi
       next if !valid?(move, brd)
 
       # make move 
-      brd = make_move(move, brd)
+      begin
+        brd = make_move(move, brd)
+      rescue
+        puts "You can't place a larger piece on a smaller piece. Try again."
+        next
+      end
       display_board(brd)
 
       # check whether user wins
@@ -128,6 +129,7 @@ class TowerOfHanoi
         break
       end
     end
+    puts "Thanks for playing. You were hilarious."
   end
 end
 
