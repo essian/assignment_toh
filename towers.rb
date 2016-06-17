@@ -12,7 +12,7 @@ class TowerOfHanoi
   def create_board(type)
     tower1, tower2, tower3 = [] , [], [] 
     1.upto(@height) do |n|
-      tower1 << ('o' * n).ljust(@height, ' ')
+      tower1 << ('o' * n).ljust(@height+1, ' ')
       tower2 << @blank
       tower3 << @blank
     end
@@ -24,12 +24,15 @@ class TowerOfHanoi
   end
 
   def display_board(board)
+    welcome
     @height.times do |n|
-      print board[0][n] + '   '
-      print board[1][n] + '   '
-      print board[2][n] + '   '
-      puts ''
+      print board[0][n]
+      print board[1][n]
+      print board[2][n]
+      puts ''  
     end
+    3.times { |n| print (n+1).to_s.ljust(@height+1, ' ') }
+    puts "\n"
   end
 
   def prompt(content)
@@ -37,6 +40,7 @@ class TowerOfHanoi
   end
 
   def welcome
+    system('clear')
     prompt "Welcome to Tower of Hanoi!"
     prompt "Instructions:"
     prompt "Enter where you'd like to move from and to in the format [1, 3]. Enter 'q' to quit."
@@ -78,10 +82,9 @@ class TowerOfHanoi
 
   def convert_to_array(move)
     begin
-      move = JSON.parse(move)
-
-      rescue
-        puts "You must enter a valid array"
+      JSON.parse(move).map { |m| m - 1 }
+    rescue
+      puts "You must enter a valid array"
     end
   end
 
@@ -89,7 +92,7 @@ class TowerOfHanoi
     if move.size != 2
       puts "You must enter an array of 2 values" 
     elsif !(move[0].between?(0,2) && move[1].between?(0, 2))
-      puts "You can only choose locations 0, 1 or 2" 
+      puts "You can only choose locations 1, 2 or 3" 
     elsif find_top_piece(move[0], brd)==nil
       puts "There are no pieces in that tower to move, try again." 
     elsif move[0] == move[1]
@@ -99,22 +102,16 @@ class TowerOfHanoi
     end
   end
 
-  def play
-    welcome
+  def play  
     brd = create_board('new')
     display_board(brd)
-
     loop do
       prompt "Enter move:"
       move = gets.chomp
       break if user_quit?(move)
-
-      # convert move string to array and validate
       move = convert_to_array(move)
       next if !move
       next if !valid?(move, brd)
-
-      # make move 
       begin
         brd = make_move(move, brd)
       rescue
@@ -122,8 +119,6 @@ class TowerOfHanoi
         next
       end
       display_board(brd)
-
-      # check whether user wins
       if user_wins?(brd)
         puts "You did it!"
         break
