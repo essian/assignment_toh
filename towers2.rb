@@ -24,14 +24,8 @@ class TowerOfHanoi
 
   def create_board(n, type)
     tower1, tower2, tower3 = [], [], []
-    n.times do |n|
-      tower1 << n+1
-    end
-    if type == :initial
-      [tower1, tower2, tower3]
-    elsif type == :winning
-      [tower2, tower3, tower1]
-    end
+    n.times { |n| tower1 << n+1 }
+    type == :initial ? [tower1, tower2, tower3] : [tower2, tower3, tower1]
   end
 
   def convert_to_array(move)
@@ -76,30 +70,22 @@ class TowerOfHanoi
       array
     end
 
-    
     def display_board(brd)
+      system('clear')
       welcome
-      tower1 = pad(brd[0].dup)
-      tower2 = pad(brd[1].dup)
-      tower3 = pad(brd[2].dup)
+      print_brd = brd.map { |j| pad(j.dup) }
       @num.times do |n|
-        print (('o' * tower1[n]).ljust(@num+1, ' '))
-        print (('o' * tower2[n]).ljust(@num+1, ' '))
-        print (('o' * tower3[n]).ljust(@num+1, ' '))
-        puts ' '
+        3.times { |tower|print (('o' * print_brd[tower][n]).ljust(@num+1, ' ')) }
+        puts "\n"
       end
       3.times { |n| print (n+1).to_s.ljust(@num+1, ' ') }
       puts "\n"
-      
     end
 
   def play
-
-    welcome
     brd = create_board(@num, :initial)
     winning_brd = create_board(@num, :winning)
     display_board(brd)
-
     loop do
       prompt "What is your move"
       move = gets.chomp
@@ -107,14 +93,14 @@ class TowerOfHanoi
       move = convert_to_array(move)
       next if !move
       next if !valid?(move, brd)
-      brd = move_piece(move, brd)
-      system('clear')
+      brd = move_piece(move, brd)  
       display_board(brd)
       if brd == winning_brd
         puts "You did it!"
         break
       end
     end
-    puts "Thanks for playing. You were hilarious."
+    puts "Thanks for playing. You were amazing."
   end
+
 end
